@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Only a,b==a,b,c? (type) should match snapshot 1`] = `"Only<ABC, \\"a\\" | \\"b\\">"`;

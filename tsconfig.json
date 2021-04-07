@@ -1,0 +1,35 @@
+{
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.snap.ts", "node_modules"],
+  "compilerOptions": {
+    "strict": true,
+    "lib": ["DOM", "ES2017"],
+    "types": ["jest"],
+    "outDir": "dist/",
+    "target": "ES2017",
+    "jsx": "preserve",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+
+    "importHelpers": false, // importing helper functions from tslib
+    "noEmitHelpers": false, // disable emitting inline helper functions
+    "noEmitOnError": true,
+
+    "pretty": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "stripInternal": true,
+
+    // "baseUrl": "./src",
+    // "paths": { "pipe-type": ["./src"] },
+
+    "noImplicitAny": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
+    "typeRoots": ["node_modules/@types"]
+  }
+}

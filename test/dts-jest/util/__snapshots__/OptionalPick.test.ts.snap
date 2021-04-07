@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OptionalPick a==a (type) should match snapshot 1`] = `"Pick<AB, \\"a\\">"`;
+
+exports[`OptionalPick ab==ab (type) should match snapshot 1`] = `"Pick<AB, \\"a\\"> | Pick<AB, \\"b\\">"`;
+
+exports[`OptionalPick b?==b? (type) should match snapshot 1`] = `"Pick<AB, \\"b\\"> | undefined"`;
+
+exports[`OptionalPick undefined==undefined (type) should match snapshot 1`] = `"undefined"`;
