@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Defined boolean==boolean -> true (type) should match snapshot 1`] = `"true"`;
+
+exports[`Defined never==never -> never (type) should match snapshot 1`] = `"never"`;
+
+exports[`Defined null==never -> never (type) should match snapshot 1`] = `"never"`;
+
+exports[`Defined object==object -> { foo: true; } (type) should match snapshot 1`] = `"{ foo: true; }"`;
+
+exports[`Defined string==string -> "foo" (type) should match snapshot 1`] = `"\\"foo\\""`;
+
+exports[`Defined undefined==never -> never (type) should match snapshot 1`] = `"never"`;

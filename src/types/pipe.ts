@@ -1,4 +1,4 @@
-import { OptionalPick, OptionalKeyOf } from './util'
+import { OptionalPick, OptionalKeyOf, ObjectLiteral } from './util'
 
 /**
  * Generate function definition that operates on the pipe interface.
@@ -14,7 +14,10 @@ import { OptionalPick, OptionalKeyOf } from './util'
  *     console.log(b)
  *   }
  */
-export interface PipeFunction<T, K extends OptionalKeyOf<T> | void = void> {
+export interface PipeFunction<
+  T extends ObjectLiteral,
+  K extends OptionalKeyOf<T> | void = void
+> {
   (props: T): K extends OptionalKeyOf<T>
     ? OptionalPick<Required<T>, K>
     : void
@@ -24,8 +27,11 @@ export interface PipeFunction<T, K extends OptionalKeyOf<T> | void = void> {
  * Generate function definition that asynchronously operates on the pipe interface.
  * @see PipeFunction — with promise wrapped return.
  */
-export interface AsyncPipeFunction<T, K extends OptionalKeyOf<T> | void = void> {
-  (input: T): K extends OptionalKeyOf<T>
+export interface AsyncPipeFunction<
+  T extends ObjectLiteral,
+  K extends OptionalKeyOf<T> | void = void
+> {
+  (props: T): K extends OptionalKeyOf<T>
     ? Promise<OptionalPick<Required<T>, K>>
     : Promise<void>
 }
@@ -38,9 +44,11 @@ export interface AsyncPipeFunction<T, K extends OptionalKeyOf<T> | void = void> 
  *     async () => ({ b: await Promise.resolve(true) })
  *   ]
  */
-export type PipeFunctions<T> = Array<
-  PipeFunction<T, OptionalKeyOf<T> | void> |
-  AsyncPipeFunction<T, OptionalKeyOf<T> | void>
+export type PipeFunctions<
+  T extends ObjectLiteral
+> = Array<
+  PipeFunction<T> |
+  AsyncPipeFunction<T>
 >
 
 /**
@@ -51,12 +59,14 @@ export type PipeFunctions<T> = Array<
  *     () => ({ b: true })
  *   ]
  */
-export type PipeFunctionsSync<T> = PipeFunction<T, OptionalKeyOf<T> | void>[]
+export type PipeFunctionsSync<
+  T extends ObjectLiteral
+> = PipeFunction<T, OptionalKeyOf<T> | void>[]
 
 /**
  * Get type of parameter for pipe function (with one argument).
  * @example
- *   const pipe = (input: { a: string, b: number }) => null
+ *   const pipe = (props: { a: string, b: number }) => null
  *   type FuncInput = PipeInput<typeof pipe>
  *   // ☝️ FuncInput = { a: string, b: number }
  */

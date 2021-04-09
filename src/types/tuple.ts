@@ -1,71 +1,60 @@
 import {
-  Intersection,
-  Mutable,
-  PickByValue,
-  ReadonlyKeys,
-  Subtract,
-  Unionize,
+  Assign,
   UnionToIntersection
 } from 'utility-types'
 import {
+  TupleUnion,
+  FunctionLiteral,
+  ObjectLiteral
+} from './util'
+import {
+  MapDefined,
+  MapReturnType,
+  MapUnwrapPromises
+} from './map'
+import {
   AsyncPipeFunction,
-  IsNeverType,
-  OptionalKeyOf,
   PipeFunction,
-  SubType,
-  UnwrapPromise
-} from '.'
-import { Defined } from './util'
+  PipeFunctions,
+  PipeFunctionsSync,
+} from './pipe'
 
 /**
- * Map types from tuple (typeof [] as const) to object keys
- * @example
- *   const types = ['foo', 1, true] as const
- *   // ☝️ -> readonly ["foo", 1, true]
- *   type TypesObj = AssignTuple<typeof types>
- *   // ☝️ -> { 0: "foo", 1: 1, 2: true }
+ * Readonly Tuple of pipe functions to spread as strict pipe args.
+ * @todo @example
  */
- export type AssignTuple<T> = Subtract<
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  Pick<Mutable<T>, ReadonlyKeys<T>>,
-  PickByValue<Mutable<T>, undefined>
->
-/* @todo above compile error is wrong and I can't find another way for it to work 🤷‍♂️  */
-/* @todo TS config rule overrides instead of disabling rules. */
-
-/** Readonly Tuple of pipe functions to spread as strict pipe args. */
-export type PipeFunctionsTuple<T> = ReadonlyArray<
-  PipeFunction<T, OptionalKeyOf<T>> |
-  AsyncPipeFunction<T, OptionalKeyOf<T>>
+export type PipeFunctionsTuple<T extends ObjectLiteral> = ReadonlyArray<
+  PipeFunction<T, any> |
+  AsyncPipeFunction<T, any>
 >
 
-/** @todo Documentation/tests - or can it be replaced with Intersection from utility-types */
-export type Intersect<T> = T extends { [K in keyof T]: infer E } ? E : T;
+/** @todo Document */
+export type TupleReturnTypeIntersection<T extends ReadonlyArray<FunctionLiteral>> =
+  UnionToIntersection<TupleUnion<MapDefined<MapUnwrapPromises<MapReturnType<T>>>>>
 
-/** @todo Make tests for all utils and chains of type utils used in PipeReturn */
-const a = () => ({ ok: true })
-const b = () => {}
-const c = () => undefined
-const d = () => 'OK'
-const e = () => Promise.resolve(true)
-type A = Defined<UnwrapPromise<ReturnType<typeof a>>> // { ok: boolean }
-type B = Defined<UnwrapPromise<ReturnType<typeof b>>> // never
-type C = Defined<UnwrapPromise<ReturnType<typeof c>>> // never
-type D = Defined<UnwrapPromise<ReturnType<typeof d>>> // string
-type E = Defined<UnwrapPromise<ReturnType<typeof e>>> // boolean
+export type Objectify<T> = T extends object ? T : never
 
-const pipeFuncsTuple = [a, b, c, d, e] as const
+type TestProps = { a?: true, b?: true, c?: true, d?: true }
+type TestFunctions = readonly [
+  () => { a: true },
+  () => Promise<{ b: true }>,
+  () => { c?: true },
+  // () => { c: true } | undefined, // @todo HANDLE THIS
+  () => void,
+  () => undefined,
+  // () => never // @todo AND THIS
+]
+type TestReturnProps = Assign<TestProps, TupleReturnTypeIntersection<TestFunctions>>
 
 /** Combine all unconditional returns from pipe functions array (as const) */
-export type PipeReturn<PipeFunctionsTuple, T> =
-  T &
-  UnionToIntersection<Intersect<{
-    [Key in keyof AssignTuple<PipeFunctionsTuple>]:
-      Defined<UnwrapPromise<ReturnType<AssignTuple<PipeFunctionsTuple>[Key]>>>
-  }>>
+export type PipeReturn<
+  Funcs extends Readonly<PipeFunctions<Props>>,
+  Props extends ObjectLiteral
+> = Assign<Props, Objectify<TupleReturnTypeIntersection<Funcs>>> // 🤷‍♂️ Y THO?
 
-type PRT = PipeReturn<typeof pipeFuncsTuple, {}> // never
+// 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉
+type TestPipeReturns = PipeReturn<TestFunctions, TestProps>
+// 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉 🎉
 
 /**
  * Shorthand to type a composed pipe's return type from a tuple of its functions.
@@ -75,11 +64,22 @@ type PRT = PipeReturn<typeof pipeFuncsTuple, {}> // never
  * @todo Fix ☝️ pipeFns has to be readonly to get return types, but using a readonly array
  *       as the argument to pipeFns causes an error.
  */
- export type PipeType<T, PipeFunctionsTuple> =
- (props: T) => Promise<PipeReturn<PipeFunctionsTuple, T>>
+export type PipeType<
+  Props extends ObjectLiteral,
+  Funcs extends Readonly<PipeFunctions<Props>>
+> = (props: Props) => Promise<PipeReturn<Funcs, Props>>
 
 /** @todo document... */
-export type PipeTypeSync<T, PipeFunctionsTuple> =
- (input: T) => PipeReturn<PipeFunctionsTuple, T>
+export type PipeTypeSync<
+  Props extends ObjectLiteral,
+  Funcs extends PipeFunctionsTuple<Props>
+> = (props: Props) => PipeReturn<Funcs, Props>
 
- 
+/** @todo Make tests for TupleReturnTypeIntersection and the utils it uses */
+// const a = () => ({ a: true })
+// const b = () => {}
+// const c = () => undefined
+// const d = () => 'd'
+// const e = () => Promise.resolve({ e: true })
+// const pipeFuncsTuple = [a, b, c, d, e] as const
+// type ABCDE = TupleReturnTypeIntersection<typeof pipeFuncsTuple>

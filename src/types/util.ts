@@ -1,5 +1,8 @@
 /** Generic function signature, for shorthand utility types. */
-export type FunctionLiteral = (...args: unknown[]) => unknown
+export type FunctionLiteral = (...args: any) => unknown
+
+/** Generic object signature, for shorthand utility types. */
+export type ObjectLiteral = { [key: string]: unknown }
 
 /** Type that can a key of given type or undefined */
 export type OptionalKeyOf<T> = keyof T | undefined
@@ -99,16 +102,6 @@ export type Spread<T, K extends Array<keyof T>> = {
 export type Find<T, X> = T extends X ? T : never
 
 /**
- * Comparison type stand-in for `never`, when type is unknown.
- * @example
- *   type ReturnTypeA = ReturnType<(() => 'OK')> // 👈 string
- *   type ReturnTypeB = ReturnType<(() => never)> // 👈 never
- *   type IsNeverA = ReturnTypeA extends IsNeverType<ReturnTypeA> ? true : false // 👈  false
- *   type IsNeverB = ReturnTypeB extends IsNeverType<ReturnTypeB> ? true : false // 👈  true
- */
-export type IsNeverType<T> = [T] extends [never] ? true : never
-
-/**
  * Get Promise resolve type.
  * @example
  *   type Response = UnwrapPromise<Promise<string>>;
@@ -116,7 +109,7 @@ export type IsNeverType<T> = [T] extends [never] ? true : never
  */
 export type UnwrapPromise<T> = T extends PromiseLike<infer U> ? U : T;
 
-/** 
+/**
  * Type guard for Promise type.
  * @example
  *   const logResolved = (msg: Promise<string> | string) =>
@@ -129,5 +122,24 @@ export function isPromise<T> (maybePromise: Promise<T> | T): maybePromise is Pro
   )
 }
 
-/** Omit undefined or void types to return only defined values (or never). */
+/**
+ * Omit undefined or void types to return only defined values (or never).
+ * Similar to `NonNullable<T>` but also filters on void type.
+ * @example
+ *   type A = Defined<{ foo: true }> // 👈 { foo: true; }
+ *   type B = Defined<'foo'> // 👈 "foo"
+ *   type C = Defined<true> // 👈 true
+ *   type D = Defined<undefined> // 👈 never
+ *   type E = Defined<null> // 👈 never
+ *   type F = Defined<never> // 👈 never
+ */
 export type Defined<T> = [T] extends [never | void | null] ? never : T
+
+/**
+ * Create a union type from types in a tuple.
+ * @example
+ *   type TupleABC = readonly ['a', 'b', 'c']
+ *   type UnionABC = TupleUnion<TupleABC>
+ *   // ☝️ 'a' | 'b' | 'c'
+ */
+export type TupleUnion<T extends ReadonlyArray<unknown>> = T[number]
