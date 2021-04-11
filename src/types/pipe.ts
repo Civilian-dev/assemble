@@ -1,6 +1,5 @@
-import { Assign, UnionToIntersection } from 'utility-types'
-import { MapDefined, MapReturnType, MapUnwrapPromises } from './map'
-import { OptionalPick, OptionalKeyOf, Objectify, FunctionLiteral, TupleUnion } from './util'
+import { Assign } from 'utility-types'
+import { OptionalPick, OptionalKeyOf, Objectify, ReturnTypesIntersection } from './util'
 
 /**
  * Generate function definition that operates on the pipe interface.
@@ -55,28 +54,12 @@ export type PipeFunctionsSync<Props> = Array<
 /** Combine all unconditional returns from pipe functions array (as const) */
 export type PipeReturnType<
   Props,
-  Funcs extends Readonly<PipeFunctions<Props>>,
+  Funcs extends PipeFunctions<Props>,
 > = Assign<
   Objectify<Props>,
-  Objectify<TupleReturnTypeIntersection<Funcs>>
+  Objectify<ReturnTypesIntersection<Funcs>>
 >
 
-/**
- * Type intersection of all unconditional return types from tuple of functions (unwraps promises).
- * @example
- *   type TestFunctions = readonly [
- *     () => { a: true },
- *     () => Promise<{ b: true }>,
- *     () => { c?: true },
- *     () => void,
- *     () => undefined,
- *     () => never
- *   ]
- *   type TestReturns = TupleReturnTypeIntersection<TestFunctions>
- *   // ☝️ { a: true } & { b: true } & { c?: true }
- */
-export type TupleReturnTypeIntersection<Funcs extends ReadonlyArray<FunctionLiteral>> =
-  UnionToIntersection<TupleUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>
 
 // export type OptionalPipeFunctionsTuple<Props> = Readonly<PipeFunctions<Props>> | undefined
 

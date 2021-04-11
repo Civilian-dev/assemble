@@ -1,5 +1,4 @@
 import {
-  // pipeType,
   pipeTypeInlineSync,
   pipeTypeSync
 } from './pipeType'
@@ -14,6 +13,7 @@ const inferPipeSync = pipeTypeSync(funcOne, funcTwo)
 const inlinePipeSync = pipeTypeInlineSync<Props>(
   () => ({ two: true }),
   funcTwo,
+  () => ({ three: true })
 )
 
 inferPipeSync().two.valueOf

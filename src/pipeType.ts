@@ -1,15 +1,9 @@
 import { Assign } from 'utility-types'
 import {
-  AsyncPipeFunction,
-  Defined,
   Objectify,
-  PipeFunction,
   PipeFunctions,
   PipeFunctionsSync,
-  // OptionalPipeFunctionsTuple,
-  // ExpectedPipeReturnType,
-  PipeReturnType,
-  TupleReturnTypeIntersection
+  ReturnTypesIntersection
  } from './types'
 
 /**
@@ -62,18 +56,15 @@ export type PipeFunctionsProps<Funcs extends PipeFunctions<any>> =
   Funcs extends PipeFunctions<infer Props> ? Props : object
 
 export function pipeTypeSync<
-  Funcs extends PipeFunctionsSync<any>,
   Props extends PipeFunctionsProps<Funcs>,
+  Funcs extends PipeFunctionsSync<any>
 // >(...funcs: Funcs): (props?: Props) => PipeReturnType<Props, Funcs> {
 >(...funcs: Funcs): (props?: Props) => Assign<
   Objectify<Props>,
-  Objectify<TupleReturnTypeIntersection<Funcs>>
+  Objectify<ReturnTypesIntersection<Funcs>>
 > {
   return (props = {} as any) => pipeTypeSyncReduce(props, funcs)
 }
-
-type TestFns = PipeFunctionsSync<{ test: true }>
-type TestRes = PipeReturnType<{ test: true }, TestFns>
 
 export function pipeTypeInlineSync<
   Props extends object

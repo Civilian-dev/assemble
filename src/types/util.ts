@@ -1,3 +1,5 @@
+import { UnionToIntersection } from 'utility-types'
+
 /** Generic function signature, for shorthand utility types. */
 export type FunctionLiteral = (...args: any) => unknown
 
@@ -135,3 +137,32 @@ export type TupleUnion<T extends ReadonlyArray<unknown>> = T[number]
 
 /** Cast type as object to satisfy constraints of utility types. */
 export type Objectify<T> = T extends object ? T : never
+
+export type MapReturnType<T> = {
+  [K in keyof T]: T[K] extends FunctionLiteral ? ReturnType<T[K]> : T[K]
+}
+
+export type MapUnwrapPromises<T> = {
+  [K in keyof T]: UnwrapPromise<T[K]>
+}
+
+export type MapDefined<T> = {
+  [K in keyof T]: Defined<T[K]>
+}
+
+/**
+ * Type intersection of all unconditional return types from array of functions (unwraps promises).
+ * @example
+ *   type TestFunctions = [
+ *     () => { a: true },
+ *     () => Promise<{ b: true }>,
+ *     () => { c?: true },
+ *     () => void,
+ *     () => undefined,
+ *     () => never
+ *   ]
+ *   type TestReturns = ReturnTypesIntersection<TestFunctions>
+ *   // ☝️ { a: true } & { b: true } & { c?: true }
+ */
+export type ReturnTypesIntersection<Funcs extends FunctionLiteral[]> =
+ UnionToIntersection<TupleUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>
