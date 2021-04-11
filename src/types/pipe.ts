@@ -1,4 +1,6 @@
-import { OptionalPick, OptionalKeyOf, ObjectLiteral } from './util'
+import { Assign, UnionToIntersection } from 'utility-types'
+import { MapDefined, MapReturnType, MapUnwrapPromises } from './map'
+import { OptionalPick, OptionalKeyOf, Objectify, FunctionLiteral, TupleUnion } from './util'
 
 /**
  * Generate function definition that operates on the pipe interface.
@@ -14,26 +16,15 @@ import { OptionalPick, OptionalKeyOf, ObjectLiteral } from './util'
  *     console.log(b)
  *   }
  */
-export interface PipeFunction<
-  T extends ObjectLiteral,
-  K extends OptionalKeyOf<T> | void = void
-> {
-  (props: T): K extends OptionalKeyOf<T>
-    ? OptionalPick<Required<T>, K>
-    : void
-}
+export interface PipeFunction<Props, Key extends OptionalKeyOf<Props> = void> {
+  (props: Props): OptionalPick<Required<Props>, Key>}
 
 /**
  * Generate function definition that asynchronously operates on the pipe interface.
  * @see PipeFunction — with promise wrapped return.
  */
-export interface AsyncPipeFunction<
-  T extends ObjectLiteral,
-  K extends OptionalKeyOf<T> | void = void
-> {
-  (props: T): K extends OptionalKeyOf<T>
-    ? Promise<OptionalPick<Required<T>, K>>
-    : Promise<void>
+export interface AsyncPipeFunction<Props, Key extends OptionalKeyOf<Props> = void> {
+  (props: Props): Promise<OptionalPick<Required<Props>, Key>>
 }
 
 /**
@@ -44,11 +35,9 @@ export interface AsyncPipeFunction<
  *     async () => ({ b: await Promise.resolve(true) })
  *   ]
  */
-export type PipeFunctions<
-  T extends ObjectLiteral
-> = Array<
-  PipeFunction<T> |
-  AsyncPipeFunction<T>
+export type PipeFunctions<Props> = Array<
+  PipeFunction<Props, OptionalKeyOf<Props>> |
+  AsyncPipeFunction<Props, OptionalKeyOf<Props>>
 >
 
 /**
@@ -59,21 +48,37 @@ export type PipeFunctions<
  *     () => ({ b: true })
  *   ]
  */
-export type PipeFunctionsSync<
-  T extends ObjectLiteral
-> = PipeFunction<T, OptionalKeyOf<T> | void>[]
+export type PipeFunctionsSync<Props> = Array<
+  PipeFunction<Props, OptionalKeyOf<Props>>
+>
+
+/** Combine all unconditional returns from pipe functions array (as const) */
+export type PipeReturnType<
+  Props,
+  Funcs extends Readonly<PipeFunctions<Props>>,
+> = Assign<
+  Objectify<Props>,
+  Objectify<TupleReturnTypeIntersection<Funcs>>
+>
 
 /**
- * Get type of parameter for pipe function (with one argument).
+ * Type intersection of all unconditional return types from tuple of functions (unwraps promises).
  * @example
- *   const pipe = (props: { a: string, b: number }) => null
- *   type FuncInput = PipeInput<typeof pipe>
- *   // ☝️ FuncInput = { a: string, b: number }
+ *   type TestFunctions = readonly [
+ *     () => { a: true },
+ *     () => Promise<{ b: true }>,
+ *     () => { c?: true },
+ *     () => void,
+ *     () => undefined,
+ *     () => never
+ *   ]
+ *   type TestReturns = TupleReturnTypeIntersection<TestFunctions>
+ *   // ☝️ { a: true } & { b: true } & { c?: true }
  */
-// export type PipeInput<Func extends (...args: unknown[]) => unknown> = Parameters<Func>[0]
+export type TupleReturnTypeIntersection<Funcs extends ReadonlyArray<FunctionLiteral>> =
+  UnionToIntersection<TupleUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>
 
-/**
- * Get the input props type from the first argument to a pipe function.
- * @todo update to extend pipe function and provide example
- */
-// export type PipeProps<T extends (...args: unknown[]) => unknown> = Parameters<T>[0]
+// export type OptionalPipeFunctionsTuple<Props> = Readonly<PipeFunctions<Props>> | undefined
+
+// export type ExpectedPipeReturnType<Props, Funcs extends OptionalPipeFunctionsTuple<Props>> =
+//   Funcs extends undefined ? Props : PipeReturnType<Props, NonNullable<Funcs>>

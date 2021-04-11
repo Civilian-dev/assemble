@@ -1,11 +1,8 @@
 /** Generic function signature, for shorthand utility types. */
 export type FunctionLiteral = (...args: any) => unknown
 
-/** Generic object signature, for shorthand utility types. */
-export type ObjectLiteral = { [key: string]: unknown }
-
 /** Type that can a key of given type or undefined */
-export type OptionalKeyOf<T> = keyof T | undefined
+export type OptionalKeyOf<T> = keyof T | undefined | void
 
 /**
  * Union of picked properties by key/s where key can be omitted and type will be undefined.
@@ -60,14 +57,6 @@ export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
  *   // ☝️ IncludeAB = { a: any, b: any, c?: any }
  */
 export type Include<T, K extends keyof T> = T & Required<Pick<T, K>>
-
-/**
- * Get Promise resolve type.
- * @example
- *   type Response = PromiseType<Promise<string>>;
- *   // ☝️ Response = string
- */
-export type MaybeAwaited<T> = T extends PromiseLike<infer U> ? U : T;
 
 /**
  * Get nested type at key.
@@ -133,7 +122,7 @@ export function isPromise<T> (maybePromise: Promise<T> | T): maybePromise is Pro
  *   type E = Defined<null> // 👈 never
  *   type F = Defined<never> // 👈 never
  */
-export type Defined<T> = [T] extends [never | void | null] ? never : T
+export type Defined<T> = [T] extends [never | void | null] ? never : undefined extends T ? never : T
 
 /**
  * Create a union type from types in a tuple.
@@ -143,3 +132,6 @@ export type Defined<T> = [T] extends [never | void | null] ? never : T
  *   // ☝️ 'a' | 'b' | 'c'
  */
 export type TupleUnion<T extends ReadonlyArray<unknown>> = T[number]
+
+/** Cast type as object to satisfy constraints of utility types. */
+export type Objectify<T> = T extends object ? T : never

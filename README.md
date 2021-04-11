@@ -116,12 +116,11 @@ sayHello()
 // 🖨️  "Hello Random"
 ```
 
-### Infer Return Types
+### Strict Return Types
 
-By default `pipeType` return type is just the pipe interface in a promise. It is possible to infer
-a more strict return type ensuring there's no conditional properties on the return type where pipe
-functions explicitly provide them. However, there is some declaration overhead, requiring pipe
-functions to be given as a tuple.
+By default `pipeType` return type is just the pipe interface in a promise. It is possible to define
+a more strict return type ensuring there's no conditional properties where pipe functions explicitly
+return those props. However, there is some declaration overhead...
 
 ```ts
 import { pipeTypeStrict, PipeFunction } from '@os-gurus/pipe-type'

@@ -1,3 +1,3 @@
 export * from './pipe'
-export * from './tuple'
+export * from './map'
 export * from './util'
