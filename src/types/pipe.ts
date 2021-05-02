@@ -54,12 +54,15 @@ export type PipeFunctionsSync<Props> = Array<
 /** Combine all unconditional returns from pipe functions array (as const) */
 export type PipeReturnType<
   Props,
-  Funcs extends PipeFunctions<Props>,
+  Funcs extends PipeFunctions<any>,
 > = Assign<
   Objectify<Props>,
   Objectify<ReturnTypesIntersection<Funcs>>
 >
 
+/** Infer type of props from an array of pipe functions. */
+export type PipeFunctionsProps <Funcs extends PipeFunctions<any>> =
+  Funcs extends PipeFunctions<infer Props> ? Props : object
 
 // export type OptionalPipeFunctionsTuple<Props> = Readonly<PipeFunctions<Props>> | undefined
 

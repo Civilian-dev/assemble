@@ -11,7 +11,9 @@ For example, to apply a series of processes to application state, user input, DB
 It will execute each function and pass the result to the next, merged with the original input.
 It returns a promise that resolves with the combined results, ignoring undefined or void returns. 
 
-Also exported are a suite of utilities to define function, input and output types.
+While there are functional programming utilities with more features and advanced concepts,
+PipeType encourages an approach to composition that is versatile, yet simple to apply and reason
+about and type-safe with minimal definition overhead.
 
 ---
 

@@ -2,7 +2,9 @@ import { Assign } from 'utility-types'
 import {
   Objectify,
   PipeFunctions,
+  PipeFunctionsProps,
   PipeFunctionsSync,
+  PipeReturnType,
   ReturnTypesIntersection
  } from './types'
 
@@ -24,8 +26,8 @@ import {
 //     }, props) as Promise<ExpectedPipeReturnType<Props, Funcs>>
 // }
 
-export function pipeTypeSyncReduce<
-  Props extends object
+export function reducePipe<
+  Props extends {}
 > (props: Props, funcs: PipeFunctionsSync<Props>) {
   return funcs.reduce((acc, fn) => {
     const cur = fn(acc)
@@ -36,38 +38,34 @@ export function pipeTypeSyncReduce<
 }
 
 /**
- * Apply a series of functions to an interface.
- * Returns accumulated outputs and ignores any non-object returns.
+ * Apply a series of typed pipe functions to a props interface.
+ * Returns intersection of input and all function return types (ignores any non-object returns).
  */
-// export function pipeTypeSync<
-//   Funcs extends PipeFunctionsSync<any>,
-//   Props extends PipeFunctionsProps<Funcs>
-// > (...funcs: Funcs): (props: Props) => ExpectedPipeReturnType<Props, Readonly<Funcs>> {
-//   return (props: Props = {} as any) => pipeTypeSyncReduce(props, funcs)
-// }
-
-// export function pipeTypeInlineSync<
-//   Props extends object
-// > (funcs: PipeFunctionsSync<Props>): (props: Props) => Props {
-//   return (props: Props = {} as any) => pipeTypeSyncReduce(props, funcs)
-// }
-
-export type PipeFunctionsProps<Funcs extends PipeFunctions<any>> =
-  Funcs extends PipeFunctions<infer Props> ? Props : object
-
-export function pipeTypeSync<
+export function pipe<
   Props extends PipeFunctionsProps<Funcs>,
-  Funcs extends PipeFunctionsSync<any>
-// >(...funcs: Funcs): (props?: Props) => PipeReturnType<Props, Funcs> {
->(...funcs: Funcs): (props?: Props) => Assign<
-  Objectify<Props>,
-  Objectify<ReturnTypesIntersection<Funcs>>
-> {
-  return (props = {} as any) => pipeTypeSyncReduce(props, funcs)
+  Funcs extends PipeFunctionsSync<any>,
+>(...funcs: Funcs): <
+  Input extends Props,
+  Output extends Input & PipeReturnType<Props, Funcs>
+>(props?: Input) => Output {
+  return (props = {} as Props) =>
+    funcs.reduce((acc, fn) => {
+      const cur = fn(acc)
+      return (typeof cur === 'object')
+        ? { ...acc, ...cur }
+        : acc
+    }, props)
 }
 
-export function pipeTypeInlineSync<
+/** @todo props = {} won't work if props has required props, need to check first and default only when none required */
+
+/**
+ * Create a pipe to apply a series of typed functions to a given interface.
+ * Pipe returns intersection of input and all function return types (ignores any non-object returns).
+ */
+export function makePipe<
   Props extends object
->(...funcs: PipeFunctionsSync<Props>): (props?: Props) => Props {
-  return (props = {} as any) => pipeTypeSyncReduce(props, funcs)
+>() {
+  return <Funcs extends PipeFunctionsSync<Props>>(...funcs: Funcs) => pipe<Props, Funcs>()
+    // <Input extends Props>(props = {} as Props) => reducePipe(props, funcs) as Input & PipeReturnType<Props, Funcs>
 }
