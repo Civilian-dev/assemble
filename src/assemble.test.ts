@@ -1,5 +1,5 @@
-import { pipeType, pipeTypeSync } from './pipeType'
-import { PipeFunction, AsyncPipeFunction } from './types'
+import { assemble, assembleSync } from './assemble'
+import { Assembler, AsyncAssembler } from './types'
 
 interface TestProps {
   one?: boolean
@@ -8,38 +8,38 @@ interface TestProps {
 }
 
 describe('PipeType', () => {
-  describe('pipeType', () => {
+  describe('assemble', () => {
     it('Calls all pipe functions', async () => {
-      const testFn: PipeFunction<TestProps, void> = jest.fn()
-      await pipeType(testFn, testFn, testFn)({})
+      const testFn: Assembler<TestProps, void> = jest.fn()
+      await assemble(testFn, testFn, testFn)({})
       expect(testFn).toBeCalledTimes(3)
     })
     it('Combines sync and async pipe function outputs', async () => {
-      const testAsync: AsyncPipeFunction<TestProps, 'one'> = async () =>
+      const testAsync: AsyncAssembler<TestProps, 'one'> = async () =>
         ({ one: await Promise.resolve(true) })
-      const testSync: PipeFunction<TestProps, 'two'> = () =>
+      const testSync: Assembler<TestProps, 'two'> = () =>
         ({ two: true })
       await expect(
-        pipeType(testAsync, testSync)({ })
+        assemble(testAsync, testSync)({ })
       ).resolves.toEqual({ one: true, two: true })
     })
-    it('Accepts anonymous function types using interface', () => {
+    it('Accepts anonymous functions', () => {
       expect(
-        pipeType<TestProps>(
+        assemble(
           () => ({ one: true }),
           ({ one }) => ({ two: !one })
         )({})
       ).resolves.toEqual({ one: true, two: false })
     })
   })
-  describe('pipeTypeSync', () => {
+  describe('assembleSync', () => {
     it('Combines all pipe function outputs', () => {
-      const testAsync: PipeFunction<TestProps, 'one'> = () =>
+      const testAsync: Assembler<TestProps, 'one'> = () =>
       ({ one: true })
-      const testSync: PipeFunction<TestProps, 'two'> = () =>
+      const testSync: Assembler<TestProps, 'two'> = () =>
         ({ two: true })
       expect(
-        pipeTypeSync(testAsync, testSync)({})
+        assembleSync(testAsync, testSync)({})
       ).toEqual({ one: true, two: true })
     })
   })

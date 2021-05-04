@@ -1,9 +1,26 @@
-import { UnionToIntersection } from 'utility-types'
+/** Get intersection type given union type `U`. */
+export type UnionToIntersection<U> =
+  (U extends unknown ? (k: U) => void : never) extends
+  (k: infer I) => void ? I : never;
 
-/** Generic function signature, for shorthand utility types. */
-export type FunctionLiteral = (...args: any) => unknown
+/** Assign properties of types in union type to one type. */
+export type MergeUnion<U> =
+  (U extends unknown ? (k: U) => void: never) extends
+  (k: infer I) => void ? { [P in keyof I]: I[P] } : never
 
-/** Type that can a key of given type or undefined */
+/** Generic function signature for utility type constraints. */
+export type UnknownFunction = (...args: never) => unknown
+
+/** Generic object signature for utility type constraints. */
+export type UnknownObject = Record<string, unknown>
+
+/** Assertion to narrow type of unknown to an object. */
+export type Objectify<T> = T extends UnknownObject ? T : never
+
+/** Assign attributes of intersecting types to one type. */
+export type MergeIntersection<T> = { [P in keyof T]: T[P] }
+
+/** Type that can a key of given type or undefined. */
 export type OptionalKeyOf<T> = keyof T | undefined | void
 
 /**
@@ -19,8 +36,8 @@ export type OptionalKeyOf<T> = keyof T | undefined | void
  *   OptionalPick<AB, ['a' | undefined, 'b']>
  *   // ☝️ { a: any, b?: any }
  */
-export type OptionalPick<T, K extends OptionalKeyOf<T> = undefined> =
-  K extends keyof T ? Pick<T, K> : undefined
+export type OptionalPick<T, K extends OptionalKeyOf<T>> =
+  K extends keyof T ? Pick<T, K> : K extends void ? void : undefined
 
 /**
  * Pick all required keys from given type.
@@ -129,17 +146,14 @@ export type Defined<T> = [T] extends [never | void | null] ? never : undefined e
 /**
  * Create a union type from types in a tuple.
  * @example
- *   type TupleABC = readonly ['a', 'b', 'c']
- *   type UnionABC = TupleUnion<TupleABC>
+ *   type ArrayABC = ['a', 'b', 'c']
+ *   type UnionABC = ArrayUnion<ArrayABC>
  *   // ☝️ 'a' | 'b' | 'c'
  */
-export type TupleUnion<T extends ReadonlyArray<unknown>> = T[number]
-
-/** Cast type as object to satisfy constraints of utility types. */
-export type Objectify<T> = T extends object ? T : never
+export type ArrayUnion<T extends ReadonlyArray<unknown>> = T[number]
 
 export type MapReturnType<T> = {
-  [K in keyof T]: T[K] extends FunctionLiteral ? ReturnType<T[K]> : T[K]
+  [K in keyof T]: T[K] extends UnknownFunction ? ReturnType<T[K]> : T[K]
 }
 
 export type MapUnwrapPromises<T> = {
@@ -164,5 +178,5 @@ export type MapDefined<T> = {
  *   type TestReturns = ReturnTypesIntersection<TestFunctions>
  *   // ☝️ { a: true } & { b: true } & { c?: true }
  */
-export type ReturnTypesIntersection<Funcs extends FunctionLiteral[]> =
- UnionToIntersection<TupleUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>
+export type ReturnTypesIntersection<Funcs extends UnknownFunction[]> =
+ UnionToIntersection<ArrayUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>

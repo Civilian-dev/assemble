@@ -1,5 +1,5 @@
-import test from '../../testType'
-import { Defined } from '../../../src/types/util'
+import test from '../testType'
+import { Defined } from '../../src/util'
 
 // @dts-jest:group Defined
 {

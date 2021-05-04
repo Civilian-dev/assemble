@@ -1,40 +1,60 @@
-# PipeType
+# Assemble
 
-A small but powerful functional programming utility for type-safe pipes.
+A small but powerful functional programming utility for type-safe pipe-like operations.
 
 ---
 
-Use `pipeType` to compose arrays of typed functions that pick from and assign to a common interface.
+Assemble composes arrays of functions that pick from and assign to a given type (assembling it).
+The composed "assembly" is like a pipe that steps through each function merging any returned props
+with input and passing it to the next. It returns a promise that resolves with the assembled result.
+Common use cases would be applying a sequence of functions to app state, DB or API results.
 
-For example, to apply a series of processes to application state, user input, DB or API results.
+While there are functional programming utilities with more features and advanced concepts, Assemble
+encourages an approach to composition that is versatile yet simple to reason about and is type-safe
+with minimal definition overhead.
 
-It will execute each function and pass the result to the next, merged with the original input.
-It returns a promise that resolves with the combined results, ignoring undefined or void returns. 
+The `Assembler` utility creates a definition for a function that can be given to `assemble`. It
+declares the props type the function will operate on and can optionally define which props it will
+return (it can also return void or conditionally undefined).
 
-While there are functional programming utilities with more features and advanced concepts,
-PipeType encourages an approach to composition that is versatile, yet simple to apply and reason
-about and type-safe with minimal definition overhead.
+Examples of generated function definitions where `type Props = { message?: string, name?: string }`:
+
+`Assembler<Props, 'message'>`
+➥ `(props: Props) => { message: string }`
+
+`Assembler<Props, 'message' | undefined>`
+➥ `(props: Props) => { message?: string }`
+
+`Assembler<Props, 'name' | 'message'>`
+➥ `(props: Props) => { message: string, name: string }`
+
+`Assembler<Props, void>`
+➥ `(props: Props) => void`
 
 ---
 
 ### Hello World
 
-This sample shows two anonymous functions operating on `PipeProps`. They are each typed from the
-inferred definition provided by `pipeType` and benefit from code hinting for the properties they
-can access and return.
+This sample shows two assemblers operating on `Props`. These functions benefit from type hinting for
+the arguments they can take from props and if defined, the props they need to return.
 
 ```ts
-import { pipeType } from '@os-gurus/pipe-type'
+import { assemble, Assembler } from '@os-gurus/assemble'
 
-interface PipeProps {
+interface Props {
   name: string
   message?: string
 }
 
-const sayHello = pipeType<PipeProps>(
-  ({ name }) => ({ message: `Hello ${name}` }),
-  ({ message }) => console.log(message)
-)
+const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
+  return { message: `Hello ${name}` }
+}
+
+const logMessage: Assembler<Props> = ({ message }) => {
+  console.log(message)
+}
+
+const sayHello = assemble(prepareMessage, logMessage)
 
 sayHello({ name: 'World' })
 // 🖨️ "Hello World"
@@ -42,77 +62,36 @@ sayHello({ name: 'World' })
 
 ---
 
-### Pipe Functions
+### Async Assemblers
 
-The `PipeFunction` utility generates a function type that operates on the pipe interface.
+Use `AsyncAssembler` utility works exactly as `Assembler` for asynchronous functions and
+`assemble` can compose a mixture of async and sync assemblers.
 
-The generated function type will take the interface as an argument and usually return one or more of
-its properties to mutate/assign. It can also be defined to return void or conditionally undefined.
-
-Examples of generated function definitions:
-- `PipeFunction<PipeProps, 'message'>` ➡ <br/>
-  `(props: PipeProps) => { message: string }`
-- `PipeFunction<PipeProps, 'message' | undefined>` ➡ <br/>
-  `(props: PipeProps) => { message?: string }`
-- `PipeFunction<PipeProps, 'name' | 'message'>` ➡ <br/>
-  `(props: PipeProps) => { message: string, name: string }`
-- `PipeFunction<PipeProps, void>` ➡ <br/>
-  `(props: PipeProps) => void`
-
-Here's a version of the first example with functions that can be exported and tested in isolation.
-
-```ts
-import { pipeType, PipeFunction } from '@os-gurus/pipe-type'
-
-interface PipeProps {
-  name: string
-  message?: string
-}
-
-const prepareMessage: PipeFunction<PipeProps, 'message'> = ({ name }) => {
-  return { message: `Hello ${name}` }
-}
-
-const logMessage: PipeFunction<PipeProps, void> = ({ message }) => {
-  console.log(message)
-}
-
-const sayHello = pipeType(prepareMessage, logMessage)
-
-sayHello({ name: 'World' })
-// 🖨️ "Hello World"
-```
-
-### Async Pipes
-
-Use `AsyncPipeFunction` utility works exactly as `PipeFunction` for asynchronous functions and
-`pipeType` can compose a combination of async/sync functions.
-
-`pipeTypeSync` can be used to enforce synchronous functions and a non-promise return.
+`assembleSync` can be used to enforce synchronous functions and a non-promise return.
 
 ```ts
 import fetch from 'node-fetch'
-import { pipeType, PipeFunction, AsyncPipeFunction } from '@nested-code/pipe-type'
+import { assemble, Assembler, AsyncAssembler } from '@os-gurus/assemble'
 
-interface PipeProps {
+interface Props {
   name?: string
   message?: string
 }
 
-const fetchName: AsyncPipeFunction<PipeProps, 'name'> = async () => {
+const fetchName: AsyncAssembler<Props, 'name'> = async () => {
   const { results } = await fetch('https://randomuser.me/api')
   return { name: results[].name.first }
 }
 
-const prepareMessage: PipeFunction<PipeProps, 'message'> = ({ name }) => {
+const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
 
-const logMessage: PipeFunction<PipeProps, void> = ({ message }) => {
+const logMessage: Assembler<Props, void> = ({ message }) => {
   console.log(message)
 }
 
-const sayHello = pipeType(fetchName, prepareMessage, logMessage)
+const sayHello = assemble(fetchName, prepareMessage, logMessage)
 
 sayHello()
 // 🖨️  "Hello Random"
@@ -120,12 +99,12 @@ sayHello()
 
 ### Strict Return Types
 
-By default `pipeType` return type is just the pipe interface in a promise. It is possible to define
+By default `assemble` return type is just the pipe interface in a promise. It is possible to define
 a more strict return type ensuring there's no conditional properties where pipe functions explicitly
 return those props. However, there is some declaration overhead...
 
 ```ts
-import { pipeTypeStrict, PipeFunction } from '@os-gurus/pipe-type'
+import { pipeTypeStrict, Assembler } from '@os-gurus/pipe-type'
 
 interface ICount {
   one?: boolean
@@ -133,8 +112,8 @@ interface ICount {
   three?: boolean
 }
 
-const countToOne: PipeFunction<PipeProps, 'one'> = () => ({ one: true })
-const countToTwo: PipeFunction<PipeProps, 'two'> = () => ({ two: true })
+const countToOne: Assembler<PipeProps, 'one'> = () => ({ one: true })
+const countToTwo: Assembler<PipeProps, 'two'> = () => ({ two: true })
 
 const countFns = [countToOne, countToTwo] as const
 
@@ -152,4 +131,4 @@ console.log(typeof counted)
 This is useful when pipes are nested within methods which need to provide definitive return types.
 However, one of the benefits of functional programming is to allow for composed functions to be
 independent of each other, so it's not always appropriate to assume they will all apply. In that
-case it might be better to use the standard `pipeType` and protect against conditional attributes.
+case it might be better to use the standard `assemble` and protect against conditional attributes.

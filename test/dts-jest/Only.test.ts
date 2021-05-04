@@ -1,5 +1,5 @@
-import test from '../../testType'
-import { Only } from '../../../src/types/util'
+import test from '../testType'
+import { Only } from '../../src/util'
 
 type ABC = { a: any, b: any, c: any }
 

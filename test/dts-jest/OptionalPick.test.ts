@@ -1,5 +1,5 @@
-import test from '../../testType'
-import { OptionalPick } from '../../../src/types/util'
+import test from '../testType'
+import { OptionalPick } from '../../src/util'
 
 type AB = { a: any, b: any }
 
@@ -14,9 +14,9 @@ type AB = { a: any, b: any }
   // @dts-jest:snap b?==b?
   test<OptionalPick<AB, 'b' | undefined>>()
 
-  // @dts-jest:snap undefined==undefined
-  test<OptionalPick<AB>>()
+  // @dts-jest:snap undefined=undefined
+  test<OptionalPick<AB, undefined>>()
   
-  // @dts-jest -> undefined
+  // @dts-jest:snap not-defined=void
   test<OptionalPick<AB>>()
 }
