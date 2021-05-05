@@ -9,12 +9,12 @@ interface TestProps {
 
 describe('PipeType', () => {
   describe('assemble', () => {
-    it('Calls all pipe functions', async () => {
+    it('Calls all assemblers', async () => {
       const testFn: Assembler<TestProps, void> = jest.fn()
       await assemble(testFn, testFn, testFn)({})
       expect(testFn).toBeCalledTimes(3)
     })
-    it('Combines sync and async pipe function outputs', async () => {
+    it('Combines sync and async assemblers returns', async () => {
       const testAsync: AsyncAssembler<TestProps, 'one'> = async () =>
         ({ one: await Promise.resolve(true) })
       const testSync: Assembler<TestProps, 'two'> = () =>
@@ -23,8 +23,8 @@ describe('PipeType', () => {
         assemble(testAsync, testSync)({ })
       ).resolves.toEqual({ one: true, two: true })
     })
-    it('Accepts anonymous functions', () => {
-      expect(
+    it('Accepts anonymous functions', async () => {
+      await expect(
         assemble(
           () => ({ one: true }),
           ({ one }) => ({ two: !one })
@@ -33,9 +33,9 @@ describe('PipeType', () => {
     })
   })
   describe('assembleSync', () => {
-    it('Combines all pipe function outputs', () => {
+    it('Combines all assembler returns', () => {
       const testAsync: Assembler<TestProps, 'one'> = () =>
-      ({ one: true })
+        ({ one: true })
       const testSync: Assembler<TestProps, 'two'> = () =>
         ({ two: true })
       expect(

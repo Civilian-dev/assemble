@@ -1,13 +1,12 @@
 import {
   ArrayUnion,
-  MapDefined,
   MapReturnType,
   MapUnwrapPromises,
   MergeUnion,
   OptionalKeyOf,
   OptionalPick,
   UnknownFunction,
-  UnknownObject,
+  UnknownObject
 } from './util'
 
 /**

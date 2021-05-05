@@ -20,11 +20,7 @@
     "removeComments": true,
     "sourceMap": true,
     "stripInternal": true,
-    "noErrorTruncation": true,
-
-    // "baseUrl": "./src",
-    // "paths": { "pipe-type": ["./src"] },
-
+  
     "noImplicitAny": true,
     "declarationMap": true,
     "esModuleInterop": true,

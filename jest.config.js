@@ -8,12 +8,12 @@ module.exports = {
     '**/src/**/*.test.ts'
   ],
   transform: {
-    'test/dts-jest/.+\\.ts$': 'dts-jest/transform',
+    'test/dts-jest/.+\\.ts$': 'dts-jest/transform'
   },
   reporters: ['default', 'dts-jest/reporter'],
   globals: {
     _dts_jest_: {
-      compiler_options: "./tsconfig.json",
+      compiler_options: './tsconfig.json',
       enclosing_declaration: true
     }
   }

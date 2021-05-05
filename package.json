@@ -1,9 +1,10 @@
 {
-  "name": "@os-gurus/pipe-type",
+  "name": "@os-gurus/assemble",
   "version": "1.0.0",
   "description": "A small but powerful functional programming utility for type-safe pipes.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "module": "src/index.ts",
   "files": [
     "dist"
   ],
@@ -11,7 +12,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OS-Gurus/pipe-type.git"
+    "url": "https://github.com/OS-Gurus/assemble.git"
   },
   "private": false,
   "devDependencies": {
@@ -21,9 +22,9 @@
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "dts-jest": "^23.3.0",
-    "dtslint": "^4.0.9",
     "eslint": "^7.25.0",
     "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.3.6",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
@@ -45,9 +46,9 @@
     "test": "jest",
     "test:update": "jest --no-cache -u",
     "test:watch": "jest --watch",
-    "test:types": "dtslint test/dts-lint",
-    "lint": "eslint",
+    "lint": "eslint .",
     "build": "tsc -p .",
+    "prepublish": "yarn build",
     "dev": "yarn build --watch"
   }
 }

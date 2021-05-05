@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": { "pipe-type": ["../../src"] },
-    "lib": ["ES2017"],
-    "strict": true
-  }
-}
