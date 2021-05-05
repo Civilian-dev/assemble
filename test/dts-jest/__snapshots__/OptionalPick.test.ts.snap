@@ -6,6 +6,6 @@ exports[`OptionalPick ab==ab (type) should match snapshot 1`] = `"Pick<AB, \\"a\
 
 exports[`OptionalPick b?==b? (type) should match snapshot 1`] = `"void | Pick<AB, \\"b\\">"`;
 
-exports[`OptionalPick not-defined=void (type) should match snapshot 1`] = `"Generic type 'OptionalPick' requires 2 type argument(s)."`;
-
 exports[`OptionalPick undefined=undefined (type) should match snapshot 1`] = `"void"`;
+
+exports[`OptionalPick void=void (type) should match snapshot 1`] = `"void"`;

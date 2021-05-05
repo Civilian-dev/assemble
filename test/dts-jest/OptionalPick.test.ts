@@ -17,6 +17,6 @@ type AB = { a: any, b: any }
   // @dts-jest:snap undefined=undefined
   test<OptionalPick<AB, undefined>>()
   
-  // @dts-jest:snap not-defined=void
-  test<OptionalPick<AB>>()
+  // @dts-jest:snap void=void
+  test<OptionalPick<AB, void>>()
 }

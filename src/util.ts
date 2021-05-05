@@ -163,20 +163,3 @@ export type MapUnwrapPromises<T> = {
 export type MapDefined<T> = {
   [K in keyof T]: Defined<T[K]>
 }
-
-/**
- * Type intersection of all unconditional return types from array of functions (unwraps promises).
- * @example
- *   type TestFunctions = [
- *     () => { a: true },
- *     () => Promise<{ b: true }>,
- *     () => { c?: true },
- *     () => void,
- *     () => undefined,
- *     () => never
- *   ]
- *   type TestReturns = ReturnTypesIntersection<TestFunctions>
- *   // ☝️ { a: true } & { b: true } & { c?: true }
- */
-export type ReturnTypesIntersection<Funcs extends UnknownFunction[]> =
- UnionToIntersection<ArrayUnion<MapDefined<MapUnwrapPromises<MapReturnType<Funcs>>>>>

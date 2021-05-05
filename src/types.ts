@@ -7,6 +7,7 @@ import {
   OptionalKeyOf,
   OptionalPick,
   UnknownFunction,
+  UnknownObject,
 } from './util'
 
 /**
@@ -64,6 +65,10 @@ export type SyncAssemblers<Props> = Array<
 export type AssemblyProps<T extends UnknownFunction[]> =
   MergeUnion<Exclude<Parameters<T[number]>[0], undefined>>
 
+type FilterObjects<T> = {
+  [K in keyof T]: T[K] extends UnknownObject ? T[K] : never
+}
+
 /** Get intersection of all resolved and unconditional assembler function returns. */
 export type AssembledProps<T extends UnknownFunction[]> =
-  MergeUnion<ArrayUnion<MapDefined<MapUnwrapPromises<MapReturnType<T>>>>>
+  MergeUnion<ArrayUnion<FilterObjects<MapUnwrapPromises<MapReturnType<T>>>>>

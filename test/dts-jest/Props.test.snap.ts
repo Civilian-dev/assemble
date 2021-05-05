@@ -1,5 +1,6 @@
 import test from '../testType'
 import { AssembledProps, AssemblyProps } from '../../src/types'
+import { UnknownFunction } from '../../src/util'
 
 type TestFunctions = [
   () => { a: true },

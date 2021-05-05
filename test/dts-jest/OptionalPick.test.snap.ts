@@ -17,6 +17,6 @@ type AB = { a: any, b: any }
   // @dts-jest:snap undefined=undefined -> void
   test<OptionalPick<AB, undefined>>()
   
-  // @dts-jest:snap not-defined=void -> Generic type 'OptionalPick' requires 2 type argument(s).
-  test<OptionalPick<AB>>()
+  // @dts-jest:snap void=void -> void
+  test<OptionalPick<AB, void>>()
 }

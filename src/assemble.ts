@@ -8,17 +8,19 @@ import { MixedAssemblers, SyncAssemblers, AssembledProps, AssemblyProps } from '
 export function assemble<
   Funcs extends MixedAssemblers<any>,
   Props extends AssemblyProps<Funcs>,
-  Assigned extends AssembledProps<Funcs>,
-  Returned extends Promise<Props & Assigned>
->(...funcs: Funcs): (props: Props) => Returned {
-  return (props) =>
+  Assigned extends AssembledProps<Funcs>
+>(...funcs: Funcs) {
+  return <
+    Input extends Props,
+    Returned extends Promise<MergeUnion<Props & Input & Assigned>>
+  >(props: Input) =>
     funcs.reduce(async (prev: Promise<Props> | Props, fn) => {
       const acc = await prev
       const cur = await fn(acc)
       return (typeof cur === 'object')
         ? { ...acc, ...cur }
         : acc
-    }, props) as Returned
+    }, props) as unknown as Returned
 }
 
 /**
@@ -28,11 +30,12 @@ export function assemble<
 export function assembleSync<
   Funcs extends SyncAssemblers<any>,
   Props extends AssemblyProps<Funcs>,
-  Assigned extends AssembledProps<Funcs>,
-  Input extends Props,
-  Returned extends MergeUnion<Props & Assigned & Input>
->(...funcs: Funcs): (props: Input) => Returned {
-  return (props) =>
+  Assigned extends AssembledProps<Funcs>
+>(...funcs: Funcs) {
+  return <
+    Input extends Props,
+    Returned extends MergeUnion<Props & Input & Assigned>
+  >(props: Input) =>
     funcs.reduce((acc: Props, fn) => {
       const cur = fn(acc)
       return (typeof cur === 'object')

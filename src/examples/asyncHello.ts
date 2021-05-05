@@ -7,7 +7,7 @@ interface Props {
 }
 
 const fetchName: AsyncAssembler<Props, 'name'> = async () => {
-  const { results } = await (await fetch('https://randomuser.me/api')).json()
+  const { results } = await fetch('https://randomuser.me/api').then(res => res.json())
   const { title, first } = results[0].name
   return { name: `${title} ${first}` }
 }

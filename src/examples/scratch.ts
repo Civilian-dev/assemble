@@ -1,30 +1,23 @@
 import { assembleSync, Assembler } from '../'
-import { AssemblyProps, AssembledProps } from '../types'
 
-type Props = { one?: boolean, two?: boolean, three?: boolean }
+type NumberProps = { one?: boolean, two?: boolean }
+type LetterProps = { a?: boolean, b?: boolean }
 
-const assignOne: Assembler<Props, 'one'> = () => ({ one: true })
+const assignOne: Assembler<NumberProps, 'one'> = () => ({ one: true })
+const assignA: Assembler<LetterProps, 'a'> = () => ({ a: true })
 
-const testFunctions = [
+const mixedAssembly = assembleSync(
   assignOne,
-  () => ({ foo: true })
-]
+  assignA,
+  () => ({ foo: true }),
+)
+// Input Props => { a?: boolean, b?: boolean, one?: boolean, two?: boolean }
+// ☝️ All the function's prop types are merged into one.
 
-const testAssembly = assembleSync(...testFunctions)
+mixedAssembly({})
+// Return Props => { a: boolean, b?: boolean, foo: boolean, one: boolean, two?: boolean }
+// ☝️ The given assemblers provide `a` and `one` so those are no longer optional props.
 
-type TestAssemblyProps = AssemblyProps<typeof testFunctions>
-type TestAssembledProps = AssembledProps<typeof testFunctions>
-
-testAssembly({}).one.valueOf // should be non-null
-testAssembly({}).two?.valueOf // should be nullable
-testAssembly({}).foo.valueOf // should be defined
-testAssembly({ three: true }).three.valueOf // should be defined and non-null
-
-function testInput<
-  Props extends AssemblyProps<typeof testFunctions>,
-  Input extends Props
->(input: Input) {
-  return input as Input & Props
-}
-
-testInput({}).one.valueOf // should be defined
+mixedAssembly({ b: true })
+// Return Props => { a: boolean, b: true, foo: boolean, one: boolean, two?: boolean }
+// ☝️ Because `b` is given, its prop type is narrowed to a literal on the return type.
