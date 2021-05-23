@@ -33,7 +33,7 @@ export function assembleSync<
   Assigned extends AssembledProps<Funcs>
 > (...funcs: Funcs) {
   return <
-    Input extends Props,
+    Input extends Readonly<Props>,
     Returned extends MergeUnion<Props & Input & Assigned>
   > (props: Input) =>
     funcs.reduce((acc: Props, fn) => {

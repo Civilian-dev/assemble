@@ -4,9 +4,6 @@ export type UnknownFunction = (...args: never) => unknown
 /** Generic object signature for utility type constraints. */
 export type UnknownObject = Record<string, unknown>
 
-/** Type that can a key of given type or undefined. */
-export type OptionalKeyOf<T> = keyof T | undefined | void
-
 /** Assign properties of types in union type to one type. */
 export type MergeUnion<U> =
   (U extends unknown ? (k: U) => void: never) extends
@@ -28,18 +25,7 @@ export type MapUnwrapPromises<T> = {
   [K in keyof T]: UnwrapPromise<T[K]>
 }
 
-/**
- * Union of picked properties by key/s where key can be omitted and type will be undefined.
- * @example
- *   type AB = { a: any, b: any }
- *   type PickA = OptionalPick<AB, 'a'> // 👈 { a: any }
- *   type PickB = OptionalPick<AB, 'b'> // 👈 { b: any }
- *   type PickMaybeB = OptionalPick<AB, 'b' | undefined> // 👈 { b: any } | undefined
- *   type PickAB = OptionalPick<AB, 'a' | 'b'> // 👈 { a: any, b: any }
- *   type PickNone = OptionalPick<AB> // 👈 undefined
- * @todo Cannot yet do partial undefined, e.g:
- *   OptionalPick<AB, ['a' | undefined, 'b']>
- *   // ☝️ { a: any, b?: any }
- */
-export type OptionalPick<T, K extends OptionalKeyOf<T>> =
-  K extends keyof T ? Pick<T, K> : K extends void ? void : undefined
+/** Remove non object value types from all indexes. */
+export type FilterObjects<T> = {
+  [K in keyof T]: T[K] extends UnknownObject ? T[K] : never
+}

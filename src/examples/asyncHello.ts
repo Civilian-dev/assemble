@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { assemble, Assembler, AsyncAssembler } from '../'
+import { assemble, Assembler, AsyncAssembler, VoidAssembler } from '../'
 
 interface Props {
   name?: string
@@ -16,7 +16,7 @@ const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
 
-const logMessage: Assembler<Props, void> = ({ message }) => {
+const logMessage: VoidAssembler<Props> = ({ message }) => {
   console.log(message)
 }
 

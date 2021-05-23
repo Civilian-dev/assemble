@@ -1,5 +1,5 @@
 import { assemble, assembleSync } from './assemble'
-import { Assembler, AsyncAssembler } from './types'
+import { Assembler, AsyncAssembler, VoidAssembler } from './types'
 
 interface TestProps {
   one?: boolean
@@ -10,7 +10,7 @@ interface TestProps {
 describe('PipeType', () => {
   describe('assemble', () => {
     it('Calls all assemblers', async () => {
-      const testFn: Assembler<TestProps, void> = jest.fn()
+      const testFn: VoidAssembler<TestProps> = jest.fn()
       await assemble(testFn, testFn, testFn)({})
       expect(testFn).toBeCalledTimes(3)
     })

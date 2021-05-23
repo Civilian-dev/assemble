@@ -20,22 +20,22 @@ This sample shows two "assemblers" operating on a props type. These functions be
 hinting for the props they can access and if defined, the props they need to return.
 
 ```ts
-import { assemble, Assembler } from '@os-gurus/assemble'
+import { assemble, Assembler, VoidAssembler } from '@os-gurus/assemble'
 
 interface Props {
   name: string
   message?: string
 }
 
-//                                        👇 must return { message }
 const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
+// ☝️ Must return { message }
 
-//                              👇 must return void (as no props given)
-const logMessage: Assembler<Props> = ({ message }) => {
+const logMessage: VoidAssembler<Props> = ({ message }) => {
   console.log(message)
 }
+// ☝️ Must return void
 
 const sayHello = assemble(prepareMessage, logMessage)
 
@@ -47,9 +47,14 @@ sayHello({ name: 'World' })
 
 ### Assembler Functions
 
-The `Assembler` utility creates a definition for a function that can be given to `assemble`. It
-declares the props type the function will operate on and can optionally define which props it will
-return (it can also return void or conditionally undefined).
+The `Assembler`, `PartialAssembler` and `VoidAssembler` type utilities define functions that can
+be given to `assemble` and declare the props type they will operate on.
+- `Assembler` functions return a subset of props, as defined by keys given to the utility.
+- `PartialAssembler` functions optionally return a subset of props as defined.
+- `VoidAssembler` functions return void, but can use the props, e.g. for logging or sending.
+
+Note, you don't have to use these utilities. Any function signature can be given to `assemble` as
+long as it accepts a single props object argument and returns either a subset of props or nothing.
 
 Examples of generated function definitions:
 
@@ -59,13 +64,13 @@ type Props = { message?: string, name?: string }
 Assembler<Props, 'message'>
 // ➥ (props: Props) => { message: string }
 
-Assembler<Props, 'message' | undefined>
-// ➥ (props: Props) => { message?: string }
-
 Assembler<Props, 'name' | 'message'>
 // ➥ (props: Props) => { message: string, name: string }
 
-Assembler<Props, void>
+PartialAssembler<Props, 'message'>
+// ➥ (props: Props) => { message?: string }
+
+VoidAssembler<Props>
 // ➥ (props: Props) => void
 ```
 
@@ -74,13 +79,13 @@ Assembler<Props, void>
 ### Async Assemblers
 
 `AsyncAssembler` works exactly as `Assembler` for asynchronous functions and `assemble` can compose
-a mixture of async and sync assemblers.
+a mixture of async and sync assemblers. As do `AsyncPartialAssembler` and `AsyncVoidAssembler`.
 
 `assembleSync` can be used to enforce synchronous functions and a non-promise return.
 
 ```ts
 import fetch from 'node-fetch'
-import { assemble, Assembler, AsyncAssembler } from '@os-gurus/assemble'
+import { assemble, Assembler, AsyncAssembler, VoidAssembler } from '@os-gurus/assemble'
 
 interface Props {
   name?: string
@@ -97,7 +102,7 @@ const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
 
-const logMessage: Assembler<Props, void> = ({ message }) => {
+const logMessage: VoidAssembler<Props> = ({ message }) => {
   console.log(message)
 }
 
@@ -130,15 +135,16 @@ const mixedAssembly = assembleSync(
   () => ({ foo: true }),
 )
 // ➥ Param { a?: boolean, b?: boolean, one?: boolean, two?: boolean }
-//         ☝️ All function prop types are merged into one
+// ☝️ All function prop types are merged into one
 
 mixedAssembly({})
 // ➥ Returns { a: boolean, b?: boolean, foo: boolean, one: boolean, two?: boolean }
-//            ☝️ Given assemblers provide `a` and `one` so they're no longer optional
+// ☝️ Given assemblers provide `a` and `one` so they're no longer optional
+// 💁‍♀️ Note `foo` wasn't in prop types but is inferred from the inline function
 
 mixedAssembly({ b: true })
 // ➥ Returns { a: boolean, b: true, foo: boolean, one: boolean, two?: boolean }
-//                        ☝️ `b` is given so its prop type is narrowed to a literal
+// ☝️ `b` is given so its prop type is narrowed to its literal value (true)
 ```
 
 ---
@@ -155,6 +161,17 @@ have more than a few functions.
 
 It would be nice to have a solution that avoids override casting, because there's a potential for it
 to return a different type at run time, which could cause false positive type checks.
+
+**Input shouldn't allow extra props**
+
+The `Input` type on `assemble` extends the `Props` type, but it should be more of an alias than an
+extension. The reason it's defined as a new type instead of just using `Props` is to tighten the
+return type by assigning whatever props are given as known literals instead of conditionals. The
+problem is that by extending, the `Input` type allows more props to be given than exist in `Props`.
+
+The type hinting works well to suggest input props, but there should be a type error when giving
+props that aren't defined in `Props`. That would ease maintenance of compositions by making it
+obvious when props are given that are no longer required by its functions.
 
 **Does not infer mutable props**
 

@@ -1,4 +1,4 @@
-import { assemble, Assembler } from '../'
+import { assemble, Assembler, VoidAssembler } from '../'
 
 /**
  * This sample shows two assemblers operating on `Props`. These functions benefit from type hinting
@@ -14,7 +14,7 @@ const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
 
-const logMessage: Assembler<Props> = ({ message }) => {
+const logMessage: VoidAssembler<Props> = ({ message }) => {
   console.log(message)
 }
 
