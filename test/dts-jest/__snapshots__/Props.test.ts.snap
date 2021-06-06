@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AssembledProps 💁 { a: true, b: true, c?: true | undefined } (type) should match snapshot 1`] = `"{ a: true; b: true; c?: true | undefined; }"`;
+
+exports[`AssemblyProps 💁 { b: boolean, a: boolean, d: string } (type) should match snapshot 1`] = `"{ b: boolean; a: boolean; d: string; }"`;

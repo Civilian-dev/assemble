@@ -62,7 +62,7 @@ From this package root:
 2. `yarn build` to compile the package files (or `yarn dev` to watch changes)
 
 In your consuming project:
-1. `yarn link @os-gurus/pipe-type` to link the local dependency
+1. `yarn link @os-gurus/assemble` to link the local dependency
 2. Run project or tests, assuming a broken build would throw it
 3. Ensure exported types available in the project IDE
-4. `yarn unlink @os-gurus/pipe-type` resume consuming the published package
+4. `yarn unlink @os-gurus/assemble` resume consuming the published package
