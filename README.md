@@ -5,7 +5,7 @@ A small but powerful functional programming utility for type-safe pipe-like oper
 ---
 
 Assemble composes arrays of functions that pick from and assign to a given type (assembling it).
-The composed "assembly" is like a pipe that steps through each function merging input with any
+The composed "assembly" is like a pipe that steps through each function, merging input with any
 returned props and passing it to the next, returning the assembled result. Common use cases would be
 applying a sequence of functions to app state, DB or API results.
 

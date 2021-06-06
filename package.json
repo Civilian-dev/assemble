@@ -37,7 +37,6 @@
     "typescript": "^4.2.4"
   },
   "dependencies": {
-    "utility-types": "^3.10.0"
   },
   "scripts": {
     "snaps": "dts-jest-remap test/dts-jest/**/*.test.ts --rename {{basename}}.snap.{{extname}}",
@@ -46,9 +45,9 @@
     "test": "jest",
     "test:update": "jest --no-cache -u",
     "test:watch": "jest --watch",
-    "lint": "eslint .",
+    "lint": "eslint src",
     "build": "tsc -p .",
-    "prepublish": "yarn build",
-    "dev": "yarn build --watch"
+    "dev": "yarn build --watch",
+    "actions": "act -s GITHUB_TOKEN"
   }
 }
