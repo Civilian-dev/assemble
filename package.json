@@ -54,5 +54,15 @@
     "build": "tsc -p .",
     "dev": "yarn build --watch",
     "actions": "act -s GITHUB_TOKEN"
+  },
+  "release": {
+    "branches": ["master", "next"],
+    "plugins": [
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git",
+      "@semantic-release/github"
+    ]
   }
 }
