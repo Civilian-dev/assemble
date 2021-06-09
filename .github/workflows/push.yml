@@ -1,0 +1,66 @@
+name: CI
+on:
+  push:
+    branches:
+      - /refs/heads/*
+      - !trunk
+
+jobs:
+  test:
+    name: Test and Lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x]
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      -
+        name: Cache Node Modules
+        id: cache-modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ matrix.node-version }}-${{ runner.os }}-node-${{ hashFiles('package.json') }}
+      -
+        name: Install Dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile
+      -
+        name: Lint and test
+        run: |
+          yarn lint
+          yarn test
+  build:
+    name: Build
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Cache Node Modules
+        id: cache-modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: 12.x-${{ runner.os }}-node-${{ hashFiles('package.json') }}
+      -
+        name: Install Dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: |
+          npm install -g yarn
+          yarn install --frozen-lockfile
+      -
+        name: Compile Package
+        run: |
+          yarn build
