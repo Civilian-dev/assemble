@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/OS-Gurus/assemble/compare/v1.0.0...v1.0.1) (2021-06-09)
+
+
+### Bug Fixes
+
+* add semantic release config ([#4](https://github.com/OS-Gurus/assemble/issues/4)) ([68d5168](https://github.com/OS-Gurus/assemble/commit/68d51683ffbd534e6e0c45457d73a55fe6c51ef0))
+
 # 1.0.0 (2021-06-09)
 
 

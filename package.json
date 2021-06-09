@@ -1,6 +1,6 @@
 {
   "name": "@os-gurus/assemble",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A small but powerful functional programming utility for type-safe pipes.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
