@@ -56,7 +56,7 @@
     "actions": "act -s GITHUB_TOKEN"
   },
   "release": {
-    "branches": ["master", "next"],
+    "branches": ["trunk"],
     "plugins": [
       "@semantic-release/release-notes-generator",
       "@semantic-release/changelog",
