@@ -2,8 +2,10 @@ name: CI
 on:
   push:
     branches:
-      - /refs/heads/*
-      - !trunk
+      - '*'
+      - '*/*'
+      - '**'
+      - '!trunk'
 
 jobs:
   test:
