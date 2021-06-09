@@ -4,8 +4,15 @@ A small but powerful functional programming utility for type-safe pipe-like oper
 
 ---
 
+![CI](https://github.com/OS-Gurus/assemble/actions/workflows/push.yml/badge.svg)
+![Release](https://github.com/OS-Gurus/assemble/actions/workflows/merge.yml/badge.svg)
+[![npm version](https://badge.fury.io/js/%40os-gurus%2Fassemble.svg)](https://badge.fury.io/js/%40os-gurus%2Fassemble)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
+---
+
 Assemble composes arrays of functions that pick from and assign to a given type (assembling it).
-The composed "assembly" is like a pipe that steps through each function merging input with any
+The composed "assembly" is like a pipe that steps through each function, merging input with any
 returned props and passing it to the next, returning the assembled result. Common use cases would be
 applying a sequence of functions to app state, DB or API results.
 
