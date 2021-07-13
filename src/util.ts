@@ -29,3 +29,6 @@ export type MapUnwrapPromises<T> = {
 export type FilterObjects<T> = {
   [K in keyof T]: T[K] extends UnknownObject ? T[K] : never
 }
+
+/** Make all props not optional without removing undefined from value types. */
+export type NonPartial<T> = { [K in keyof Required<T>]: T[K] };
