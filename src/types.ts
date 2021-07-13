@@ -4,7 +4,8 @@ import {
   MapUnwrapPromises,
   MergeUnion,
   FilterObjects,
-  UnknownFunction
+  UnknownFunction,
+  NonPartial
 } from './util'
 
 /**
@@ -16,7 +17,7 @@ import {
  *   }
  */
 export interface Assembler<Props, Key extends keyof Props> {
-  (props: Props): Required<Pick<Props, Key>>
+  (props: Props): NonPartial<Pick<Props, Key>>
 }
 
 /**
@@ -62,7 +63,7 @@ export type SyncAssemblers<Props> = Array<
  * @see Assembler — with promise wrapped return.
  */
 export interface AsyncAssembler<Props, Key extends keyof Props> {
-  (props: Props): Promise<Required<Pick<Props, Key>>>
+  (props: Props): Promise<NonPartial<Pick<Props, Key>>>
 }
 
 /**
