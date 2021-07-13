@@ -75,7 +75,7 @@ Assembler<Props, 'name' | 'message'>
 // ➥ (props: Props) => { message: string, name: string }
 
 PartialAssembler<Props, 'message'>
-// ➥ (props: Props) => { message?: string }
+// ➥ (props: Props) => { message?: string } | undefined
 
 VoidAssembler<Props>
 // ➥ (props: Props) => void

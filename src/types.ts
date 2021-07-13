@@ -24,12 +24,12 @@ export interface Assembler<Props, Key extends keyof Props> {
  * Function that operates on assembly props, optionally returning subset of props.
  * @example
  *   interface Props { a?: boolean, b?: boolean }
- *   const maybeAssignB: PartialAssembler<Props, 'b' | undefined> = ({ a }) => {
+ *   const maybeAssignB: PartialAssembler<Props, 'b'> = ({ a }) => {
  *     if (a) return { b: true }
  *   }
  */
 export interface PartialAssembler<Props, Key extends keyof Props> {
-  (props: Props): Partial<Pick<Props, Key>>
+  (props: Props): Partial<Pick<Props, Key>> | undefined
 }
 
 /**
@@ -71,7 +71,7 @@ export interface AsyncAssembler<Props, Key extends keyof Props> {
  * @see PartialAssembler
  */
 export interface AsyncPartialAssembler<Props, Key extends keyof Props> {
-  (props: Props): Partial<Pick<Props, Key>>
+  (props: Props): Promise<Partial<Pick<Props, Key>> | undefined>
 }
 
 /**
@@ -79,7 +79,7 @@ export interface AsyncPartialAssembler<Props, Key extends keyof Props> {
  * @see VoidAssembler
  */
 export interface AsyncVoidAssembler<Props> {
-  (props: Props): void
+  (props: Props): Promise<void>
 }
 
 /**

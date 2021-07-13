@@ -1,5 +1,5 @@
 import { assemble, assembleSync } from './assemble'
-import { Assembler, AsyncAssembler, VoidAssembler } from './types'
+import { Assembler, AsyncAssembler, PartialAssembler, VoidAssembler } from './types'
 
 interface TestProps {
   one?: boolean
@@ -25,11 +25,13 @@ describe('PipeType', () => {
       await expect(assemble(testAsync, testSync)({}))
         .resolves.toEqual({ one: true, two: true })
     })
-    it('Processes undefined props', async () => {
-      const testMaybe: Assembler<TestProps, 'maybe'> = () => ({
+    it('Processes partially assembled or undefined props', async () => {
+      const getMaybe: Assembler<TestProps, 'maybe'> = () => ({
         maybe: undefined
       })
-      await expect(assemble(testMaybe)({}))
+      const getTwoIfOne: PartialAssembler<TestProps, 'two'> = ({ one }) =>
+        one ? { two: true } : undefined
+      await expect(assemble(getMaybe, getTwoIfOne)({}))
         .resolves.toEqual({ maybe: undefined })
     })
     it('Accepts anonymous functions', async () => {

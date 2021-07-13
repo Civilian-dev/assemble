@@ -39,5 +39,5 @@ mixedAssembly({})
 
 // @todo Adding input props that aren't in function prop types should be a type error
 mixedAssembly({ b: true, shouldError: true })
-// Return Props => { a: boolean, b: true, foo: boolean, one: boolean, two?: boolean }
+// Return Props => { a?: boolean, b: true, foo: boolean, one: boolean, two?: boolean }
 // ☝️ Because `b` is given, its prop type is narrowed to a literal on the return type.
