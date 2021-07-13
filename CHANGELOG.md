@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/OS-Gurus/assemble/compare/v1.0.1...v1.0.2) (2021-07-13)
+
+
+### Bug Fixes
+
+* partial props ([#5](https://github.com/OS-Gurus/assemble/issues/5)) ([be0df3c](https://github.com/OS-Gurus/assemble/commit/be0df3c4474a34b6b262cdffe2fdfb02468180b2))
+
 ## [1.0.1](https://github.com/OS-Gurus/assemble/compare/v1.0.0...v1.0.1) (2021-06-09)
 
 
