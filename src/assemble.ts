@@ -1,12 +1,18 @@
-import { MergeUnion } from './util'
-import { MixedAssemblers, SyncAssemblers, AssembledProps, AssemblyProps } from './types'
+import type {
+  AssembledProps,
+  AssemblyProps,
+  MixedAssemblers,
+  SyncAssemblers
+} from './types/assembler'
+import type { MergeUnion } from './types/util'
 
 /**
  * Apply a series of (potentially async) functions to an interface.
  * Resolves with intersection of input and all unconditional function returns.
  */
 export function assemble<
-  Funcs extends MixedAssemblers<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  Funcs extends MixedAssemblers<any>,
   Props extends AssemblyProps<Funcs>,
   Assigned extends AssembledProps<Funcs>
 > (...funcs: Funcs) {
@@ -17,9 +23,10 @@ export function assemble<
     funcs.reduce(async (prev: Promise<Props> | Props, fn) => {
       const acc = await prev
       const cur = await fn(acc)
-      return (typeof cur === 'object')
-        ? { ...acc, ...cur }
-        : acc
+      if (typeof cur === 'object') {
+        Object.assign(acc, cur)
+      }
+      return acc
     }, props) as unknown as Returned
 }
 
@@ -28,7 +35,8 @@ export function assemble<
  * Returns intersection of input and all unconditional function returns.
  */
 export function assembleSync<
-  Funcs extends SyncAssemblers<any>, // eslint-disable-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  Funcs extends SyncAssemblers<any>,
   Props extends AssemblyProps<Funcs>,
   Assigned extends AssembledProps<Funcs>
 > (...funcs: Funcs) {
@@ -38,9 +46,10 @@ export function assembleSync<
   > (props: Input) =>
     funcs.reduce((acc: Props, fn) => {
       const cur = fn(acc)
-      return (typeof cur === 'object')
-        ? { ...acc, ...cur }
-        : acc
+      if (typeof cur === 'object') {
+        Object.assign(acc, cur)
+      }
+      return acc
     }, props) as unknown as Returned
 }
 

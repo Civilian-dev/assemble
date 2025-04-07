@@ -1,31 +1,24 @@
 {
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.snap.ts", "node_modules", "src/examples"],
-  "compilerOptions": {
-    "strict": true,
-    "lib": ["DOM", "ES2017"],
-    "types": ["jest"],
-    "outDir": "dist/",
-    "target": "ES2017",
-    "jsx": "preserve",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "declaration": true,
-
-    "importHelpers": false, // importing helper functions from tslib
-    "noEmitHelpers": false, // disable emitting inline helper functions
-    "noEmitOnError": true,
-
-    "pretty": true,
-    "sourceMap": true,
-    "stripInternal": true,
-  
-    "noImplicitAny": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "preserveConstEnums": true,
-    "skipLibCheck": true,
-    "typeRoots": ["node_modules/@types"]
-  }
+	"include": ["src/**/*.ts"],
+	"exclude": ["src/**/*.snap.ts", "node_modules", "examples"],
+	"extends": [
+		"@tsconfig/node20/tsconfig.json",
+		"@tsconfig/strictest/tsconfig.json"
+	],
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "src",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"exactOptionalPropertyTypes": true,
+		"isolatedModules": true,
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"preserveWatchOutput": true,
+		"resolveJsonModule": true,
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true
+	}
 }

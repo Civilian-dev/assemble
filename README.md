@@ -12,9 +12,11 @@ A small but powerful functional programming utility for type-safe pipe-like oper
 ---
 
 Assemble composes arrays of functions that pick from and assign to a given type (assembling it).
+
 The composed "assembly" is like a pipe that steps through each function, merging input with any
-returned props and passing it to the next, returning the assembled result. Common use cases would be
-applying a sequence of functions to app state, DB or API results.
+returned props and passing it to the next, returning the assembled result.
+
+Common use cases would be applying a sequence of functions to app state, DB or API results.
 
 The focus of Assemble is to encourage an approach to function composition that is versatile yet
 simple to reason about and is type-safe with minimal definition overhead.
@@ -27,9 +29,9 @@ This sample shows two "assemblers" operating on a props type. These functions be
 hinting for the props they can access and if defined, the props they need to return.
 
 ```ts
-import { assemble, Assembler, VoidAssembler } from '@os-gurus/assemble'
+import { assemble, Assembler, NonAssembler } from '@os-gurus/assemble'
 
-interface Props {
+type Props = {
   name: string
   message?: string
 }
@@ -39,7 +41,7 @@ const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
 }
 // ☝️ Must return { message }
 
-const logMessage: VoidAssembler<Props> = ({ message }) => {
+const logMessage: NonAssembler<Props> = ({ message }) => {
   console.log(message)
 }
 // ☝️ Must return void
@@ -54,11 +56,11 @@ sayHello({ name: 'World' })
 
 ### Assembler Functions
 
-The `Assembler`, `PartialAssembler` and `VoidAssembler` type utilities define functions that can
+The `Assembler`, `PartialAssembler` and `NonAssembler` type utilities define functions that can
 be given to `assemble` and declare the props type they will operate on.
 - `Assembler` functions return a subset of props, as defined by keys given to the utility.
 - `PartialAssembler` functions optionally return a subset of props as defined.
-- `VoidAssembler` functions return void, but can use the props, e.g. for logging or sending.
+- `NonAssembler` functions return undefined but can use the props, e.g. for logging or sending.
 
 Note, you don't have to use these utilities. Any function signature can be given to `assemble` as
 long as it accepts a single props object argument and returns either a subset of props or nothing.
@@ -77,7 +79,7 @@ Assembler<Props, 'name' | 'message'>
 PartialAssembler<Props, 'message'>
 // ➥ (props: Props) => { message?: string } | undefined
 
-VoidAssembler<Props>
+NonAssembler<Props>
 // ➥ (props: Props) => void
 ```
 
@@ -86,15 +88,15 @@ VoidAssembler<Props>
 ### Async Assemblers
 
 `AsyncAssembler` works exactly as `Assembler` for asynchronous functions and `assemble` can compose
-a mixture of async and sync assemblers. As do `AsyncPartialAssembler` and `AsyncVoidAssembler`.
+a mixture of async and sync assemblers. As do `AsyncPartialAssembler` and `AsyncNonAssembler`.
 
 `assembleSync` can be used to enforce synchronous functions and a non-promise return.
 
 ```ts
 import fetch from 'node-fetch'
-import { assemble, Assembler, AsyncAssembler, VoidAssembler } from '@os-gurus/assemble'
+import { assemble, Assembler, AsyncAssembler, NonAssembler } from '@os-gurus/assemble'
 
-interface Props {
+type Props = {
   name?: string
   message?: string
 }
@@ -109,8 +111,9 @@ const prepareMessage: Assembler<Props, 'message'> = ({ name }) => {
   return { message: `Hello ${name}` }
 }
 
-const logMessage: VoidAssembler<Props> = ({ message }) => {
+const logMessage: NonAssembler<Props> = ({ message }) => {
   console.log(message)
+  return undefined // see known issues below
 }
 
 const sayHello = assemble(fetchName, prepareMessage, logMessage)
@@ -157,6 +160,16 @@ mixedAssembly({ b: true })
 ---
 
 ### Known Issues
+
+**Partial Assembler has to return undefined**
+
+I tried to make void and partial assemblers that didn't need to return explicit undefined. This
+might have been nicer to use, but for now if they don't return a prop they must `return undefined`
+(or `{}` for partial assemblers only).
+
+Unfortunately any async function type will not raise a type error when applied to a `() => void`
+type restriction. This meant by including void returning assemblers the `SyncAssemblers` type would
+allow async assemblers.
 
 **Merged type constraints override**
 

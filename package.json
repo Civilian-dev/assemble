@@ -1,70 +1,42 @@
 {
-  "name": "@os-gurus/assemble",
-  "version": "1.0.2",
-  "description": "A small but powerful functional programming utility for type-safe pipes.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "src/index.ts",
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": "Tim Kinnane <timkinnane@gmail.com>",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OS-Gurus/assemble.git"
-  },
-  "private": false,
-  "devDependencies": {
-    "@semantic-release/changelog": "^5.0.1",
-    "@semantic-release/git": "^9.0.0",
-    "@types/jest": "^26.0.23",
-    "@types/node": "^15.12.1",
-    "@types/node-fetch": "^2.5.10",
-    "@typescript-eslint/eslint-plugin": "^4.26.0",
-    "@typescript-eslint/parser": "^4.26.0",
-    "dts-jest": "^24.0.0",
-    "eslint": "^7.28.0",
-    "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jest": "^24.3.6",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-promise": "^5.1.0",
-    "jest": "^27.0.4",
-    "node-fetch": "^2.6.1",
-    "prettier": "^2.3.1",
-    "semantic-release": "^17.4.3",
-    "ts-jest": "^27.0.2",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.2"
-  },
-  "dependencies": {},
-  "scripts": {
-    "snaps": "dts-jest-remap test/dts-jest/**/*.test.ts --rename {{basename}}.snap.{{extname}}",
-    "pretest": "yarn snaps --check",
-    "posttest:update": "yarn snaps",
-    "test": "jest",
-    "test:update": "jest --no-cache -u",
-    "test:watch": "jest --watch",
-    "lint": "eslint src",
-    "build": "tsc -p .",
-    "dev": "yarn build --watch",
-    "actions": "act -s GITHUB_TOKEN"
-  },
-  "release": {
-    "branches": [
-      "trunk"
-    ],
-    "plugins": [
-      "@semantic-release/release-notes-generator",
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/git",
-      "@semantic-release/github"
-    ]
-  }
+	"name": "assemble-ts",
+	"version": "2.0.0",
+	"description": "A small but powerful functional programming utility for type-safe pipes.",
+	"author": "Tim Kinnane <tim@civilian.dev>",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/civilian-dev/assemble.git"
+	},
+	"type": "module",
+	"engines": {
+		"node": ">=20.0.0"
+	},
+	"exports": {
+		"types": "./dist/index.d.ts",
+		"import": "./dist/index.js",
+		"default": "./dist/index.js"
+	},
+	"files": [
+		"dist"
+	],
+	"devDependencies": {
+		"@biomejs/biome": "^1.8.1",
+		"@tsconfig/node20": "^20.1.4",
+		"@tsconfig/strictest": "^2.0.5",
+		"@types/node": "^20.14.2",
+		"@vitest/coverage-istanbul": "^1.6.0",
+		"pkgroll": "^2.1.1",
+		"rimraf": "^5.0.7",
+		"ts-toolbelt": "^9.6.0",
+		"typescript": "^5.4.5",
+		"vitest": "^1.6.0"
+	},
+	"scripts": {
+		"lint": "biome check src",
+		"test": "vitest --coverage --typecheck",
+		"build": "tsc --noEmit && pkgroll --target=node20 --clean",
+		"dev": "pkgroll --watch",
+		"actions": "act -s $GITHUB_TOKEN"
+	}
 }

@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`NonPartial 💁 { foo: string | undefined } (type) should match snapshot 1`] = `"NonPartial<TestProps>"`;
